@@ -35,8 +35,8 @@ const key='rahgrade_v1';let s=JSON.parse(localStorage.getItem(key)||'null')||{ba
 let selected=null,mult=2,target=null,busy=false,currentAngle=0;
 const fmt=n=>Number(n).toLocaleString('ru-RU',{maximumFractionDigits:2});
 function cleanName(x){let n=(x.name||'').replace(/ StatTrack$/,'').replace(/ Premium$/,'');return (x.weapon+' '+n).trim()}
-function iconUrl(x){const iconName=cleanName(x).replace(/^F\/S\b/,'FS');return 'https://standoffhub.pro/images/items/'+encodeURIComponent(iconName)+'.png'}
-function img(x,cls='skin'){if(!x)return '<div class=fallback>?</div>';return `<img class="${cls}" src="${iconUrl(x)}" alt="${cleanName(x)}">`}
+function iconUrls(x){const n=cleanName(x);if(n==='Butterfly Twilight')return ['https://cdn-www.bluestacks.com/bs-images/blog-image-SO2_Knives-Weapon-Guide_RU11.jpg','https://standoffhub.pro/images/items/Butterfly%20Twilight.png'];if(n==='AKR12 Year of the Horse')return ['https://standoffhub.pro/images/items/AKR12%20S2%20Year%20of%20the%20Horse.png','https://standoffhub.pro/images/items/AKR12%20S1%20Year%20of%20the%20Horse.png','https://standoffhub.pro/images/items/AKR12%20S3%20Year%20of%20the%20Horse.png'];const iconName=n.replace(/^F\/S\b/,'FS');return ['https://standoffhub.pro/images/items/'+encodeURIComponent(iconName)+'.png']}
+function img(x,cls='skin'){if(!x)return '<div class=fallback>?</div>';const urls=iconUrls(x);return `<img class="${cls}" src="${urls[0]}" data-fallbacks="${urls.slice(1).join('|')}" alt="${cleanName(x)}" onerror="const a=(this.dataset.fallbacks||'').split('|').filter(Boolean);if(a.length){this.src=a.shift();this.dataset.fallbacks=a.join('|')}">`}
 function save(){localStorage.setItem(key,JSON.stringify(s));renderAll()}
 function chanceVal(){return mult===1.333333?75:mult===2?50:mult===4?25:12.5}
 function chooseTarget(){if(!selected)return null;let want=selected.price*mult;let pool=C.filter(x=>cleanName(x)!==cleanName(selected));pool.sort((a,b)=>Math.abs(a.price-want)-Math.abs(b.price-want));let near=pool.slice(0,Math.min(12,pool.length));let base=near[Math.floor(Math.random()*near.length)]||pool[0];return {...base,price:+want.toFixed(2)}}
